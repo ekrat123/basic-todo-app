@@ -59,6 +59,11 @@ class UI {
           <span class = "remove" data-id =${item.id}>🗑️</span> </div>`;
     });
     DomElements.listEl.innerHTML = tasks.join(" ");
+    if (tasks.length === 0) {
+      DomElements.deleteEl.classList.add("none");
+    } else {
+      DomElements.deleteEl.classList.remove("none");
+    }
   }
 }
 

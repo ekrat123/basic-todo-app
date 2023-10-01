@@ -66,6 +66,10 @@ body {
 }
 
 [data-deleteAll] {
-  margin: 3rem;
   margin-top: 0.7rem;
+  width: 30%;
+}
+
+.none {
+  display: none;
 }
