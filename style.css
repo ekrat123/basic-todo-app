@@ -41,7 +41,7 @@ body {
   outline: none;
 }
 
-.form .btn {
+.btn {
   border-radius: 3px;
   padding: 0.5rem;
   background-color: darkblue;
@@ -63,4 +63,8 @@ body {
 
 .todo span {
   cursor: pointer;
+}
+
+[data-deleteAll] {
+  margin-top: 0.7rem;
 }

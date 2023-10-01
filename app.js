@@ -2,7 +2,8 @@ const DomElements = (function () {
   const formEl = document.querySelector("[data-form]");
   const listEl = document.querySelector("[data-lists]");
   const inputEL = document.querySelector("[data-input]");
-  return { formEl, listEl, inputEL };
+  const deleteEl = document.querySelector("[data-deleteAll]");
+  return { formEl, listEl, inputEL, deleteEl };
 })();
 
 class Storage {
@@ -27,17 +28,25 @@ class Project {
     this.todos = Storage.getData("data");
   }
 
-  addTask(todo, id = this.todos.length) {
-    const newTodo = new Todo(todo, id);
-    this.todos.push(newTodo);
+  updateDataBaseAndDisplay() {
     Storage.addStorage("data", this.todos);
     UI.displayTodos(this.todos);
   }
 
+  addTask(todo, id = this.todos.length) {
+    const newTodo = new Todo(todo, id);
+    this.todos.push(newTodo);
+    this.updateDataBaseAndDisplay();
+  }
+
   removeTodo(id) {
     this.todos = this.todos.filter((item) => item.id !== +id);
-    Storage.addStorage("data", this.todos);
-    UI.displayTodos(this.todos);
+    this.updateDataBaseAndDisplay();
+  }
+
+  deleteAll() {
+    this.todos = [];
+    this.updateDataBaseAndDisplay();
   }
 }
 
@@ -67,6 +76,10 @@ DomElements.listEl.addEventListener("click", (e) => {
   if (e.target.classList.contains("remove")) {
     allTodos.removeTodo(e.target.dataset.id);
   }
+});
+
+DomElements.deleteEl.addEventListener("click", () => {
+  allTodos.deleteAll();
 });
 
 window.addEventListener("DOMContentLoaded", () => {
