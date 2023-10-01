@@ -1,18 +1,19 @@
-const formEl = document.querySelector("[data-form]");
-const listEl = document.querySelector("[data-lists]");
-const inputEL = document.querySelector("[data-input]");
+const DomElements = (function () {
+  const formEl = document.querySelector("[data-form]");
+  const listEl = document.querySelector("[data-lists]");
+  const inputEL = document.querySelector("[data-input]");
+  return { formEl, listEl, inputEL };
+})();
 
 class Storage {
-  static addStorage(data) {
-    localStorage.setItem("data", JSON.stringify(data));
+  static addStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
   }
 
-  static getData() {
-    return JSON.parse(localStorage.getItem("data"));
+  static getData(key) {
+    return JSON.parse(localStorage.getItem(key)) || [];
   }
 }
-
-let todos = Storage.getData() || [];
 
 class Todo {
   constructor(todo, id) {
@@ -21,41 +22,53 @@ class Todo {
   }
 }
 
+class Project {
+  constructor() {
+    this.todos = Storage.getData("data");
+  }
+
+  addTask(todo, id = this.todos.length) {
+    const newTodo = new Todo(todo, id);
+    this.todos.push(newTodo);
+    Storage.addStorage("data", this.todos);
+    UI.displayTodos(this.todos);
+  }
+
+  removeTodo(id) {
+    this.todos = this.todos.filter((item) => item.id !== +id);
+    Storage.addStorage("data", this.todos);
+    UI.displayTodos(this.todos);
+  }
+}
+
 class UI {
-  static displayTodos() {
-    let tasks = todos.map((item) => {
+  static displayTodos(todos) {
+    const tasks = todos.map((item) => {
       return `<div class="todo"><p>
             ${item.todo}
           </p>
           <span class = "remove" data-id =${item.id}>🗑️</span> </div>`;
     });
-    listEl.innerHTML = tasks.join(" ");
+    DomElements.listEl.innerHTML = tasks.join(" ");
   }
 }
 
-formEl.addEventListener("submit", (e) => {
+const allTodos = new Project();
+
+DomElements.formEl.addEventListener("submit", (e) => {
   e.preventDefault();
-  if (inputEL.value) {
-    const newTodo = new Todo(inputEL.value, todos.length);
-    todos.push(newTodo);
-    Storage.addStorage(todos);
-    UI.displayTodos();
-    inputEL.value = "";
+  if (DomElements.inputEL.value) {
+    allTodos.addTask(DomElements.inputEL.value);
+    DomElements.inputEL.value = "";
   }
 });
 
-function removeTodo(id) {
-  todos = todos.filter((item) => item.id !== +id);
-  Storage.addStorage(todos);
-  UI.displayTodos();
-}
-
-listEl.addEventListener("click", (e) => {
+DomElements.listEl.addEventListener("click", (e) => {
   if (e.target.classList.contains("remove")) {
-    removeTodo(e.target.dataset.id);
+    allTodos.removeTodo(e.target.dataset.id);
   }
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-  UI.displayTodos();
+  UI.displayTodos(allTodos.todos);
 });
