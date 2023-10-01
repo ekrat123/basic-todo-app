@@ -66,5 +66,6 @@ body {
 }
 
 [data-deleteAll] {
+  margin: 3rem;
   margin-top: 0.7rem;
 }
