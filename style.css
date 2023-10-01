@@ -25,7 +25,7 @@ body {
   display: flex;
   align-items: center;
   border-radius: 5px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .form input {
@@ -37,6 +37,7 @@ body {
 }
 
 .form .btn {
+  border-radius: 3px;
   padding: 0.7rem;
   background-color: darkblue;
   color: #fff;
