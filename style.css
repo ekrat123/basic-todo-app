@@ -11,8 +11,11 @@ body {
 }
 
 .container {
-  width: 70vw;
+  width: 60%;
   margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .container .title {
