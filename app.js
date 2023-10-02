@@ -3,6 +3,7 @@ const DomElements = (function () {
   const listEl = document.querySelector("[data-lists]");
   const inputEL = document.querySelector("[data-input]");
   const deleteEl = document.querySelector("[data-deleteAll]");
+
   return { formEl, listEl, inputEL, deleteEl };
 })();
 
@@ -44,6 +45,16 @@ class Project {
     this.updateDataBaseAndDisplay();
   }
 
+  editTodo(id, editTodo) {
+    this.todos = this.todos.map((item) => {
+      if (item.id === +id) {
+        item.todo = editTodo;
+      }
+      return item;
+    });
+    this.updateDataBaseAndDisplay();
+  }
+
   deleteAll() {
     this.todos = [];
     this.updateDataBaseAndDisplay();
@@ -53,10 +64,13 @@ class Project {
 class UI {
   static displayTodos(todos) {
     const tasks = todos.map((item) => {
-      return `<div class="todo"><p>
-            ${item.todo}
-          </p>
-          <span class = "remove" data-id =${item.id}>🗑️</span> </div>`;
+      return `<div class="todo">
+      <p>${item.todo}</p>
+      <div class="btn-div">
+        <span class="remove" data-id="${item.id}">🗑️</span>
+        <span class="edit" data-id="${item.id}">🖋️</span>
+      </div>
+    </div> `;
     });
     DomElements.listEl.innerHTML = tasks.join(" ");
     if (tasks.length === 0) {
@@ -65,28 +79,47 @@ class UI {
       DomElements.deleteEl.classList.remove("none");
     }
   }
+
+  static editTodo(e) {
+    const pEl = e.target.parentElement.parentElement.firstElementChild;
+    if (e.target.textContent === "🖋️") {
+      pEl.setAttribute("contenteditable", "true");
+      pEl.focus();
+      pEl.style.color = "blue";
+      e.target.textContent = "Save";
+    } else if (e.target.textContent === "Save") {
+      allTodos.editTodo(e.target.dataset.id, pEl.textContent);
+      pEl.setAttribute("contenteditable", "false");
+      e.target.textContent = "🖋️";
+      pEl.style.color = "black";
+    }
+  }
 }
 
 const allTodos = new Project();
 
-DomElements.formEl.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (DomElements.inputEL.value) {
-    allTodos.addTask(DomElements.inputEL.value);
-    DomElements.inputEL.value = "";
-  }
-});
+const EventHandler = (function () {
+  DomElements.formEl.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (DomElements.inputEL.value) {
+      allTodos.addTask(DomElements.inputEL.value);
+      DomElements.inputEL.value = "";
+    }
+  });
 
-DomElements.listEl.addEventListener("click", (e) => {
-  if (e.target.classList.contains("remove")) {
-    allTodos.removeTodo(e.target.dataset.id);
-  }
-});
+  DomElements.listEl.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove")) {
+      allTodos.removeTodo(e.target.dataset.id);
+    } else if (e.target.classList.contains("edit")) {
+      UI.editTodo(e);
+    }
+  });
 
-DomElements.deleteEl.addEventListener("click", () => {
-  allTodos.deleteAll();
-});
+  DomElements.deleteEl.addEventListener("click", () => {
+    allTodos.deleteAll();
+  });
 
-window.addEventListener("DOMContentLoaded", () => {
-  UI.displayTodos(allTodos.todos);
-});
+  window.addEventListener("DOMContentLoaded", () => {
+    UI.displayTodos(allTodos.todos);
+  });
+})();
